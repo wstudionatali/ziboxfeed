@@ -1,13 +1,13 @@
 <?php
 /**
  *
- * @link              https://github.com/wstudionatali/ziboxfeed.git
+ * @link              https://github.com/wstudionatali/ziboxfeed
  * @since             1.0.0
  * @package           WPHW
  *
  * @wordpress-plugin
  * Plugin Name:       ziboxfeed
- * Plugin URI:        https://github.com/wstudionatali/ziboxfeed.git
+ * Plugin URI:        https://github.com/wstudionatali/ziboxfeed
  * Description:       plugin for uploading zibox categories and attributes and building product xmlfeed for zibox
  * Version:           1.1.0
  * Author:            bcat
@@ -54,6 +54,7 @@ function deactivate_zibox() {
 
 register_activation_hook( __FILE__, 'activate_zibox' );
 register_deactivation_hook( __FILE__, 'deactivate_zibox' );
+
 /*github updater*/
 
 add_action( 'init', 'github_ziboxfeed_plugin_updater' );
