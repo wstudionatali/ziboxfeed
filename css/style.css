@@ -1,0 +1,11 @@
+.subcats-lev1 {padding-left: 10px; font-size: 16px;}
+.subcats-lev2 {padding-left: 30px;}
+.top-level-cat {font-size: 20px; font-weight: bold;}
+.header-log {font-size: 18px; font-weight: bold;}
+.log-wrapper {
+    height: 700px;
+    overflow-y: scroll;
+    background: #fff;
+    padding: 10px;
+    margin: 20px 0;
+    border: 1px solid #333;}
