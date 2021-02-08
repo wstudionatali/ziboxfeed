@@ -9,7 +9,7 @@
  * Plugin Name:       ziboxfeed
  * Plugin URI:        https://github.com/
  * Description:       plugin for uploading zibox categories and attributes and building product xmlfeed for zibox
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            bcat
  * Author URI:        https://
  * License:           GPL-2.0+
