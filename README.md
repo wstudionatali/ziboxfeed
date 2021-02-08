@@ -1,5 +1,5 @@
 # WordPress zibox plugin
-
+~Current Version:1.1.0~
 
 
 ## Description
