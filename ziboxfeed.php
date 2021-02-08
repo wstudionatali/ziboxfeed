@@ -54,6 +54,36 @@ function deactivate_zibox() {
 
 register_activation_hook( __FILE__, 'activate_zibox' );
 register_deactivation_hook( __FILE__, 'deactivate_zibox' );
+/*github updater*/
+
+add_action( 'init', 'github_ziboxfeed_plugin_updater' );
+function github_ziboxfeed_plugin_updater() {
+
+	include_once ( ZIBOX_PATH . '/includes/updater.php');
+
+	define( 'WP_GITHUB_FORCE_UPDATE', true );
+
+	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
+
+		$config = array(                
+			'slug' => plugin_basename( __FILE__ ),
+			'proper_folder_name' => 'ziboxfeed',
+			'api_url' => 'https://api.github.com/repos/wstudionatali/ziboxfeed',
+			'raw_url' => 'https://raw.github.com/wstudionatali/ziboxfeed/main',
+			'github_url' => 'https://github.com/wstudionatali/ziboxfeed',
+			'zip_url' => 'https://github.com/wstudionatali/ziboxfeed/archive/main.zip',
+			'sslverify' => true,
+			'requires' => '5.6.1',
+			'tested' => '5.6.1',
+			'readme' => 'README.md',
+			'access_token' => '',
+		);
+
+		new WP_GitHub_Updater( $config );
+
+	}
+
+}
 	
 /* ADD page for zi-box settings
 */
