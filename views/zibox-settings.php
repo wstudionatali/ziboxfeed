@@ -10,11 +10,15 @@ $langs = array();
 	<div class="col-6">
 
 <?php  if ( empty($langs) ) {
-	     	?> <p>Upload product Xml file for Zibox: <a class="button" href="<?php echo get_site_url() ?>/feed/xmlproductfeed" target="_blank">Get xml file</a></p> <?php 	  
+	     	?> <p>Upload product XML file for Zibox: <a class="button" href="<?php echo get_site_url() ?>/feed/xmlproductfile" target="_blank">Get xml file</a></p>
+               <p>Get product XML feed by url: <a class="link" href="<?php echo get_site_url() ?>/feed/xmlproductfeed" target="_blank"><?php echo get_site_url() ?>/feed/xmlproductfeed</a></p>
+			<?php 	  
       }  else  { 
 	    foreach ($langs as $cod=>$lang){
 	      $l = '?lng='.$cod;	 
-	       ?> <p>Upload product Xml file for Zibox: <a class="button" href="<?php echo get_site_url() ?>/feed/xmlproductfeed<?php echo $l ?>" target="_blank">Get <?php echo $lang['translated_name'] ?> <img src="<?php echo  $lang['country_flag_url']?>"> xml file</a></p> <?php      
+	       ?> <p>Upload product XML file for Zibox: <a class="button" href="<?php echo get_site_url() ?>/feed/xmlproductfile<?php echo $l ?>" target="_blank">Get <?php echo $lang['translated_name'] ?> <img src="<?php echo  $lang['country_flag_url']?>"> xml file</a></p> 
+		   <p>Get <?php echo $lang['translated_name'] ?> <img src="<?php echo  $lang['country_flag_url']?>"> product XML feed by url: <a class="link" href="<?php echo get_site_url() ?>/feed/xmlproductfeed<?php echo $l ?>" target="_blank"><?php echo get_site_url() ?>/feed/xmlproductfeed<?php echo $l ?></a></p> 
+		   <?php      
 		 }  
       }      ?>
 
