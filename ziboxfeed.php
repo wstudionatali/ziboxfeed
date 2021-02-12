@@ -9,7 +9,7 @@
  * Plugin Name:       ziboxfeed
  * Plugin URI:        https://github.com/wstudionatali/ziboxfeed
  * Description:       plugin for uploading zibox categories and attributes and building product xmlfeed for zibox
- * Version:           1.1.0
+ * Version:           1.2.0
  * Author:            bcat
  * Author URI:        https://bcat.tech/
  * License:           GPL-2.0+
@@ -20,7 +20,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; /* Exit if accessed directly.*/
 }
-define('ZIBOX_VERSION', '1.1.1' );
+define('ZIBOX_VERSION', '1.2.0' );
 define('ZIBOX_PATH', realpath( dirname(__FILE__) ) );
 define('ZIBOX_URL', plugins_url() . '/' . basename(dirname(__FILE__)) . '/' );
 /* Activate logger*/
@@ -175,15 +175,19 @@ function zibox_setting_markup_url() {
 /* build xml product feed for zibox*/
 add_action( 'init', function(){
 add_feed( 'xmlproductfeed', 'xmlproductfeed_markup' );
+add_feed( 'xmlproductfile', 'xmlproductfile_markup' );
 
 });
 
 function xmlproductfeed_markup(){
-global $file_name;
  include( ZIBOX_PATH . '/views/xmlproductfeed.php' );	
 	exit;
 }
-
+function xmlproductfile_markup(){
+global $file_name;
+ include( ZIBOX_PATH . '/views/xmlproductfile.php' );	
+	exit;
+}
 
 /* insert/update data to the table zibox_categories*/
 add_action( 'admin_action_updatelist', 'updatelist_admin_action', 10 );
