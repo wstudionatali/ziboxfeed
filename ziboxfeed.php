@@ -9,18 +9,18 @@
  * Plugin Name:       ziboxfeed
  * Plugin URI:        https://github.com/wstudionatali/ziboxfeed
  * Description:       plugin for uploading zibox categories and attributes and building product xmlfeed for zibox
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            bcat
  * Author URI:        https://bcat.tech/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  */
-
+		$var = filter_var("string", FILTER_SANITIZE_STRING); 
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; /* Exit if accessed directly.*/
 }
-define('ZIBOX_VERSION', '1.2.0' );
+define('ZIBOX_VERSION', '1.3.0' );
 define('ZIBOX_PATH', realpath( dirname(__FILE__) ) );
 define('ZIBOX_URL', plugins_url() . '/' . basename(dirname(__FILE__)) . '/' );
 /* Activate logger*/
@@ -203,18 +203,22 @@ $table = $wpdb->prefix.'zibox_categories';
 $format = array('%d', '%s');
 
  foreach ($ziboxcats as $key => $ziboxcat) {
-    $id = $wpdb->get_var( "SELECT id FROM $table WHERE id = {$ziboxcat['id']}");
-	
+	/* sanitize string name and num id before updating or inserting*/
+	$san_zi_cat_name = filter_var($ziboxcat['cat_name'], FILTER_SANITIZE_STRING); 
+	$san_zi_cat_id = (int)$ziboxcat['id']; 
+ 
+    $id = $wpdb->get_var( "SELECT id FROM $table WHERE id = {$san_zi_cat_id}");
+
   if ( $id ) {
           $data = array (
-           'zi_category_name' => $ziboxcat['cat_name']
+           'zi_category_name' => $san_zi_cat_name
             );
 	 $result = $wpdb->update( $table, $data, array( 'id' => $id ) );
 			if ($result) zibox_log("updated existing table zibox categories - id", $id);
   } else {
 	   $data = array (
-            'id' => $ziboxcat['id'],
-            'zi_category_name' => $ziboxcat['cat_name']
+            'id' => $san_zi_cat_id,
+            'zi_category_name' => $san_zi_cat_name
             );
         $result = $wpdb->insert( $table, $data, $format );
 			$tpl_id = $wpdb->insert_id;
@@ -224,7 +228,7 @@ $format = array('%d', '%s');
 				zibox_log("Field data : ".print_r($ziboxcat,1));
 				zibox_log("MySQL query: ".print_r($wpdb->last_query,1));
 				zibox_log("MySQL error: ".print_r($wpdb->last_error,1));
-			} 	else { zibox_log("added new zi-box category - id = ",  $ziboxcat['id']);}
+			} 	else { zibox_log("added new zi-box category - id = ",  $san_zi_cat_id);}
      }	 
    }	   
   }
@@ -295,7 +299,7 @@ function attrlist_admin_action() {
 	 
 	 
 	   $i = 0;  $attr_cats = array();
-	 /* replace array zi_charact_cats to term_ids woocommerce cats*/
+	 /* replace array zi_charact_cats  by array term_ids woocommerce cats*/
        foreach ($zi_charact_cats as $zi_charact_cat) {
 	   
 	    $woo_cat =  $wpdb->get_row( "SELECT * FROM ".$table3." WHERE meta_key = 'zibox_cat_id' AND meta_value = ".$zi_charact_cat );
@@ -313,7 +317,7 @@ function attrlist_admin_action() {
 	   
 	      $newattr_id = insert_attr_values ($zibox_charact, $cats);
 		    if ( is_wp_error( $newattr_id ) ) { 
-			 zibox_log('Attribute ', $zibox_charact['name'] );
+			 zibox_log('Attribute ', $san_zi_charact_name );
 			 zibox_log('Attribute id=', $zibox_charact['id'] );
 			 zibox_log('Sorry, there has been an error ', esc_html( $newattr_id->get_error_message() ));			
 	         }
@@ -322,7 +326,7 @@ function attrlist_admin_action() {
 		  $old_slug = $woo_attr->attribute_name;
 		  $newattr_id = insert_attr_values ($zibox_charact, $cats, $attr_id, $old_slug);
 		    if ( is_wp_error( $newattr_id ) ) { 
-			 zibox_log('Attribute ', $zibox_charact['name'] );
+			 zibox_log('Attribute ', $san_zi_charact_name );
 			 zibox_log('Attribute id=', $zibox_charact['id'] );
 			 zibox_log('Sorry, there has been an error ', esc_html( $newattr_id->get_error_message() ));			
 	         }		  
@@ -370,7 +374,7 @@ $k=1;
 	wp_redirect( $_SERVER['HTTP_REFERER'] );
     exit();
 }
-/*  */
+/* clean log file /wp-content/plugins/ziboxfeed/log/error.log */
 add_action( 'admin_action_clean_log', 'clean_log_admin_action', 14 );
 function clean_log_admin_action() {
 if(isset($_POST['submit_clean_log'])){
@@ -381,7 +385,7 @@ file_put_contents($myfilename, "");
     exit();
 }
 
-
+/* ----- Start of subsidiary functions  block------*/
 /* get data from the table zibox_categories to render in page zi-box settings 
 return $ziboxcategories - object id, zi_category_name, active
 */
@@ -403,13 +407,15 @@ $table = $wpdb->prefix.'zibox_categories';
 $zibox_activ_cats = $wpdb->get_results( "SELECT * FROM ".$table." WHERE active = 1" );
 return $zibox_activ_cats;
 }
-
-
 /* array cat: name, id, level, parent_id - zibox-data, $parent_id- parent term id, $updated_term_id is term_id  to uddate data  */ 
 function cat_branch_insert ($parent_id, $cat, $updated_term_id = NULL) {
+/* sanitize string name and num id before updating or inserting*/
+$san_zi_cat_name = filter_var($cat['name'], FILTER_SANITIZE_STRING);
+$san_zi_cat_id = (int)$cat['id']; 
+ 
   if (is_null($updated_term_id)) {
       $insert_data = wp_insert_term (
-        $cat['name'],
+        $san_zi_cat_name,
         'product_cat',
            array (
              'description' => '',
@@ -424,14 +430,14 @@ function cat_branch_insert ($parent_id, $cat, $updated_term_id = NULL) {
 
     $term_id = $insert_data['term_id'];
     $key='zibox_cat_id';
-    $value =  $cat['id'];
+    $value =  $san_zi_cat_id;
     add_term_meta($term_id, wp_slash($key), (int)($value));	
 	
        } 
 	
   } else {
       wp_update_term( $updated_term_id->term_id, 'product_cat', array(
-	      'name'   =>  $cat['name'],
+	      'name'   =>  $san_zi_cat_name,
 	      'parent' => (int) $parent_id,
 		
          ));
@@ -439,61 +445,56 @@ function cat_branch_insert ($parent_id, $cat, $updated_term_id = NULL) {
 }
 /* inserting or updating attributes and there values*/
 function insert_attr_values ($zibox_charact, $cats, $attr_id = 0, $old_slug = "") {
+/* sanitize string name and num id before updating or inserting*/
+$san_zi_charact_name = filter_var($zibox_charact['name'], FILTER_SANITIZE_STRING);
+$san_zi_charact_id = (int)$zibox_charact['id']; 
+
   global $wpdb;
   $table = $wpdb->prefix.'term_taxonomy';
   $table1 = $wpdb->prefix.'terms';
   $table2 = $wpdb->prefix.'woocommerce_attribute_taxonomies';  
   /* updating*/
-  if (strlen ($zibox_charact['name']) > 20) {
-  $sl= wc_sanitize_taxonomy_name(mb_strimwidth($zibox_charact['name'], 0, 20, ' '.$zibox_charact['id'])); 
-  } else { $sl=wc_sanitize_taxonomy_name($zibox_charact['name'].' '.$zibox_charact['id']); }
+  if (strlen ($san_zi_charact_name) > 20) {
+  $sl= wc_sanitize_taxonomy_name(mb_strimwidth($san_zi_charact_name, 0, 20, ' '.$san_zi_charact_id)); 
+  } else { $sl=wc_sanitize_taxonomy_name($san_zi_charact_name.' '.$san_zi_charact_id); }
      $args = array (
   'id' => $attr_id,
-  'name' => $zibox_charact['name'],
+  'name' => $san_zi_charact_name,
   'slug' => $sl,
   'old_slug' => $old_slug
      );
-     $newattr_id = wc_create_attribute( $args );
-	 
-	
-	 
-	 if ( is_wp_error( $newattr_id ) ) { return $newattr_id;
-			
+     $newattr_id = wc_create_attribute( $args );	 
+	 if ( is_wp_error( $newattr_id ) ) { return $newattr_id;			
 	} else { /*updating attr values 1.if values exist get them in array and match to $zibox_charact[values]*/
-	$result = $wpdb->update( $table2,	array( 'cats' => $cats, 'zibox_attribute_id' => $zibox_charact['id'] ),	array( 'attribute_id' => $newattr_id ),	array( '%s', '%d' ), array( '%d' )); 
-	 $woo_attr = $wpdb->get_row( "SELECT * FROM ".$table2." WHERE attribute_id = ".$newattr_id);
-	
-	
+	$result = $wpdb->update( $table2,	array( 'cats' => $cats, 'zibox_attribute_id' => $san_zi_charact_id ),	array( 'attribute_id' => $newattr_id ),	array( '%s', '%d' ), array( '%d' )); 
+	 $woo_attr = $wpdb->get_row( "SELECT * FROM ".$table2." WHERE attribute_id = ".$newattr_id);	
 	   if (is_null($woo_attr)){
 	   } else {
-	  $slug = wc_attribute_taxonomy_name( $woo_attr->attribute_name );
-         
+	  $slug = wc_attribute_taxonomy_name( $woo_attr->attribute_name );         
 	   }
 	   $attr_vals = $wpdb->get_results("SELECT ".$table1.".name AS val FROM ".$table." LEFT JOIN ".$table1." ON ".$table.".term_id = ".$table1.".term_id WHERE ".$table.".taxonomy = 'pa_".$slug."'");
 	     if (is_null($attr_vals) or empty($attr_vals)) { $attr_vals = array(); /* no value exist*/ 
 		 } else {
 		 /*some values exist. transform array of objects $attr_vals in simple array*/
 		      for ($i = 0; $i < count($attr_vals); $i++) {
-		       $attr_vals[i] = $attr_vals[i]->val;}
-			   
+		       $attr_vals[i] = $attr_vals[i]->val;}			   
 			}
 			
-		   $zibox_charact_vals = $zibox_charact['variants'];
-		   
-		   
+		   $zibox_charact_vals = $zibox_charact['variants'];		   
 		   if (!empty($zibox_charact_vals)) {/*inserting  values*/
 		      foreach ($zibox_charact_vals as $zibox_charact_val){
-			    if (!in_array($zibox_charact_val, $attr_vals)){ /* возможен ли поиск значения в пустом массиве? if zibox value is absent in woocpmmerse attribute values */ 
+			 /* sanitize characteristic variant name before updating or inserting*/
+           $san_zi_charact_variant = filter_var($zibox_charact_val, FILTER_SANITIZE_STRING); 
+			  
+			    if (!in_array($san_zi_charact_variant, $attr_vals)){ /* возможен ли поиск значения в пустом массиве? if zibox value is absent in woocpmmerse attribute values */ 
 				 
 		        $insert_data = wp_insert_term (
-                  $zibox_charact_val,
+                  $san_zi_charact_variant,
                   $slug,
                      array (
                           'description' => '',            
                            'parent' => 0 ) 
-		                  );
-						  
-						  
+		                  );						  
 					   }
 		           }
 		    }		
@@ -562,3 +563,4 @@ wp_update_attachment_metadata( $attach_id, $attach_data );
 }	 
 return $attach_id;	
 }
+/* -----The End of subsidiary functions block------*/
