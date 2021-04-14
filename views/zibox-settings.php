@@ -23,7 +23,7 @@ $langs = array();
       }      ?>
 
     <form method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
-	<div>To update/sinhronize zibox categories press the button "Update list"</div>
+	<div class="notice-text">To update/sinhronize zibox categories press the button "Update list"</div>
         <input type="hidden" name="action" value="updatelist" />
         <input type="submit" value="Update list" name="submit_updatelist"/>
     </form>
@@ -35,14 +35,14 @@ $langs = array();
 $checked = ($ziboxcategory->active)? "checked" : "";
 ?>
 
-    <input type="checkbox" name="mycat[]" id="miinput" value="<?php echo $ziboxcategory->id ?>" <?php echo $checked; ?>><span class="top-level-cat"><?php echo $ziboxcategory->zi_category_name ?></span></br>
+    <input type="checkbox" name="mycat[]" id="catinput_<?php echo $key?>" value="<?php echo $ziboxcategory->id ?>" <?php echo $checked; ?>><span class="top-level-cat"><?php echo $ziboxcategory->zi_category_name ?></span></br>
 <?php foreach ($subcats[$ziboxcategory->id] as $subcat) { ?>
 	
 	<div class="subcats-lev<?php echo $subcat['level']?>"><?php echo $subcat['name']?></div>
 	
 <?php } ?>
 <?php } ?>
-<div>To Upload/update checked categories to woocommerce producte categories press the button "Upload categories"</div>
+<div class="notice-text">To Upload/update checked categories to woocommerce producte categories press the button "Upload categories"</div>
         <input type="hidden" name="action" value="catslist" />
         <input type="submit" value="Upload categories" name="submit_cats"/>
 </form>
@@ -50,26 +50,42 @@ $checked = ($ziboxcategory->active)? "checked" : "";
 <br>
 
     <form method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
-	<div>To upload/update zibox attributes press the button "Upload attributes"</div>
-	<div>To upload/update zibox attributes values press the button "Upload attributes" a second time</div>
+	<div class="notice-text">To upload/update zibox attributes press the button "Upload attributes". Loading is carried out by default 50 items at a time</div>
+
         <input type="hidden" name="action" value="attrlist" />
         <input type="submit" value="Upload attributes" name="submit_attributes"/>
+	<span class="steps"><?php 
+	if ($offset && $chatacts_count)  echo "The rest is ".($chatacts_count-$offset)." Total amount is ".$chatacts_count. ". Reset steps to dismiss";	
+	?></span>		
     </form>  
 <br>	
 	  <form method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
-	<div>To upload images for product categories press the button "Upload images"</div>
+	<div class="notice-text">To upload images for product categories press the button "Upload images". Loading is carried out by default 5 items at a time</div>
+
         <input type="hidden" name="action" value="images" />
-        <input type="submit" value="Upload images" name="submit_images"/>
+        <input type="submit" value="Upload images" name="submit_images"/><span class="steps"><?php 
+	 if ($offset_img && $imgs_count) echo " The rest is ".($imgs_count-$offset_img)." Total amount is ".$imgs_count. ". Reset steps to dismiss";	
+	?></span>
     </form>
 	<br>
+	
+	
+ <form id="reset_steps" method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
+        <input type="hidden" name="action" value="reset_steps" />
+        <input class="reset_steps" type="submit" value="Reset steps" name="submit_reset_steps"/>
+    </form>
+</br>	
+	
+	
 	</div>
 
 	
 	<div class="col-6">
-	    <form method="POST" action="options.php">
+	    <form id="opt" method="POST" action="options.php">
     <?php
     settings_fields( 'zi_box' );
     do_settings_sections( 'zi_box' );
+		?> <div>If you have an error by executive time while loading categories, attributes or images, reload the page, decrease count limit option, save it and try to load again.</div> <?php
     submit_button();
     ?>
     </form>
@@ -83,9 +99,21 @@ foreach ($lines as $line_num => $line) {
 }?>
 </div>
 <br>
-	  <form method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
+	  <form id="clean_log" method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
         <input type="hidden" name="action" value="clean_log" />
         <input type="submit" value="Clean log" name="submit_clean_log"/>
     </form>
+<br>
+<form id="del_cats" method="POST" action="<?php echo admin_url( 'admin.php' ) ?>">
+<?php foreach ($ziactivecats as $key => $ziactivecat) {
+?>
+
+    <input type="checkbox" name="mydelcat[]" id="delinput_<?php echo $key?>" value="<?php echo $ziactivecat->id ?>" ><span class="top-level-cat"><?php echo $ziactivecat->zi_category_name ?></span></br>
+
+<?php } ?>
+<div>To delete checked categories from woocommerce producte categories press the button "Delete categories". Please be careful. Categories are removed along with attributes</div>
+        <input type="hidden" name="action" value="delcats" />
+        <input type="submit" value="Delete categories" name="submit_del_cats"/>
+</form>	
 </div>
 </div>

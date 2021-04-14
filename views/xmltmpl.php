@@ -7,7 +7,7 @@ if (isset($_GET["lng"]))
 { $lang =  $_GET["lng"]; }
 	status_header( 200 );
 	echo '<?xml version="1.0" encoding="UTF-8"?>';
-/* $cats - wooconnerce categories which are zibox too and not empty*/      
+/* $cats - woocommerce categories which are zibox at the same time and not empty*/      
 	$cats = get_terms( array(
     'taxonomy'      => 'product_cat',
 	'orderby'     => 'term_id',

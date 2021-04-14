@@ -9,3 +9,41 @@
     padding: 10px;
     margin: 20px 0;
     border: 1px solid #333;}
+.notice-text {
+    padding: 20px 0 8px;
+    font-size: 15px;
+}
+#zibox_message_success{
+    padding: 20px 20px 20px 38px;
+    background: #6ab371;
+    color: #fff;
+    border-left: 4px solid #1bf10d;
+}
+.zi-notice .notice-dismiss:before {
+      color: #fff;
+}
+form#opt {
+    border: 4px groove #d8d8d8;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-style: dashed;
+}
+#zibox_message_not-completed {
+ padding: 20px 20px 20px 38px;
+    background: red;
+    color: #fff;
+    border-left: 4px solid yellow;
+}
+form#del_cats {display: none;}
+input.reset_steps {
+    background: #ff5722;
+    color: #fff;
+    border: 2px solid #d40000;
+    padding: 6px;
+}
+form#reset_steps {
+text-align: right;
+}
+span.steps {
+color: red;
+}
